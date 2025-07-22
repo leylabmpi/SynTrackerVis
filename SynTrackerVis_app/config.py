@@ -19,6 +19,7 @@ bottom_percentile = 0.1
 
 file_upload_timeout = 20
 downloads_dir = "/Downloads/"
+settings_dir = "/Settings/"
 manual_file = "/SynTrackerVis_app/manual.md"
 
 ## CSS Styles ##

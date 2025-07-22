@@ -27,7 +27,7 @@ using the following command:
       `conda env create -f SynTrackerVis.yml`
 
 Activate the newly created environment: 
-      `conda activate SynTracker_Vis`
+      `conda activate SynTrackerVis`
 
 ## Open SynTrackerVis web-application
 

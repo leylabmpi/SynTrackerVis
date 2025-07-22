@@ -29,6 +29,20 @@ def destroyed(session_context):
     print("\n\n\nThe session is closed...")
 
 
+def get_setting_files():
+    settings_dir_path = os.getcwd() + config.settings_dir
+    setting_files_list = []
+    for file in os.listdir(settings_dir_path):
+        if file.endswith(".conf"):
+            # Prints only text file present in My Folder
+            setting_files_list.append(file)
+
+    if len(setting_files_list) == 0:
+        setting_files_list.append("No previously saved settings file")
+
+    return setting_files_list
+
+
 def change_disabled_state_inverse(chkbox_state):
     if chkbox_state:
         return False
@@ -140,6 +154,7 @@ class SynTrackerVisApp:
         self.calculated_APSS_all_genomes_size_dict = dict()
         self.working_directory = os.getcwd()
         self.downloads_dir_path = self.working_directory + config.downloads_dir
+        self.settings_dir_path = self.working_directory + config.settings_dir
         self.contigs_list_by_name = []
         self.contigs_list_by_length = []
         self.total_pairs_genome = 0
@@ -164,6 +179,7 @@ class SynTrackerVisApp:
         self.feature_colormap_watcher = ""
         self.synteny_per_pos_feature_select_watcher = ""
         self.visited_multi_genome_tab = 0
+        self.setting_file = ""
 
         # Bootstrap template
         self.template = pn.template.VanillaTemplate(
@@ -172,7 +188,7 @@ class SynTrackerVisApp:
         )
 
         # Apply custom CSS to adjust button font size in the header
-        button_css = '''
+        header_buttons_css = '''
             /* Target buttons in the header of the Vanilla template */
             .bk-btn { 
                 font-size: 20px !important;
@@ -186,9 +202,17 @@ class SynTrackerVisApp:
                 color: #87cefa !important; 
             }
         '''
+        bottom_buttons_css = '''
+                    /* Target buttons in the header of the Vanilla template */
+                    .bk-btn { 
+                        font-size: 14px !important;
+                        color: white; 
+                        background-color: #800080;
+                    }
+                '''
 
         self.header_buttons = pn.widgets.ToggleGroup(name='header_buttons', options=['Home', 'Help'], behavior="radio",
-                                                     button_type='primary', stylesheets=[button_css])
+                                                     button_type='primary', stylesheets=[header_buttons_css])
         self.header_buttons.param.watch(self.load_correct_page, 'value')
         self.menu_row = pn.Row(self.header_buttons, styles=config.menu_row_style)
         self.header_container = pn.Column(
@@ -213,15 +237,27 @@ class SynTrackerVisApp:
         self.text_input = pn.widgets.TextInput(name='', placeholder='Enter the file path here...')
         self.input_file = pn.widgets.FileInput(accept='.csv, .tab, .txt')
         self.metadata_file = pn.widgets.FileInput(accept='.csv, .tsv, .tab, .txt')
-        self.gene_annotation_file = pn.widgets.FileInput()
+        #self.is_settings_file = pn.widgets.Checkbox(name='\u00A0\u00A0Select a previously saved settings file for the '
+        #                                                 'uploaded dataset (if any):',
+        #                                            value=False, styles={'font-size': "17px"})
+        #self.settings_file_select = pn.widgets.Select(name="", options=get_setting_files(),
+        #                                              disabled=pn.bind(change_disabled_state_inverse,
+        #                                                               chkbox_state=self.is_settings_file,
+        #                                                               watch=True))
+        #self.gene_annotation_file = pn.widgets.FileInput()
 
         self.submit_button = pn.widgets.Button(name='Submit', button_type='primary',
                                                disabled=pn.bind(enable_submit, file_input=self.input_file,
                                                                 text_input=self.text_input, watch=True))
         self.submit_button.on_click(self.load_input_file)
 
-        self.new_file_button = pn.widgets.Button(name='Process a new input file', button_type='primary')
+        self.new_file_button = pn.widgets.Button(name='Process a new input file', button_type='primary',
+                                                 stylesheets=[bottom_buttons_css])
         self.new_file_button.on_click(self.create_new_session)
+
+        #self.save_setings_button = pn.widgets.Button(name='Save current settings', button_type='primary',
+        #                                         stylesheets=[bottom_buttons_css])
+        #self.save_setings_button.on_click(self.save_settings)
 
         self.genomes_select = pn.widgets.Select(name='Select a species to process:', value=None,
                                                 options=[], styles={'margin': "0"})
@@ -599,6 +635,9 @@ class SynTrackerVisApp:
                                                                       'margin-top': "0",
                                                                       'color': config.title_red_color}))
 
+        #self.main_area.append(self.is_settings_file)
+        #self.main_area.append(self.settings_file_select)
+
         self.main_area.append(pn.Spacer(height=30))
 
         self.main_area.append(self.submit_button)
@@ -661,8 +700,17 @@ class SynTrackerVisApp:
         pn.state.location.reload = True
 
     def submit_new_file_button(self):
-        button_column = pn.Column(pn.Spacer(height=30), self.new_file_button)
+        button_column = pn.Column(pn.Spacer(height=20), self.new_file_button)
         return button_column
+
+    def add_bottom_buttomns_row(self):
+        buttons_row = pn.Row(self.save_setings_button, pn.Spacer(width=5), self.new_file_button)
+        #buttons_col = pn.Column(pn.Spacer(height=20), buttons_row)
+        buttons_col = pn.Column(pn.Spacer(height=20), self.new_file_button)
+        return buttons_col
+
+    def save_settings(self):
+        pass
 
     def get_number_of_genomes(self):
 
@@ -879,7 +927,7 @@ class SynTrackerVisApp:
 
             self.main_area.append(self.single_multi_genome_tabs)
 
-            self.main_area.append(self.submit_new_file_button())
+            self.main_area.append(self.add_bottom_buttomns_row())
 
     def changed_single_multi_tabs(self, event):
 
