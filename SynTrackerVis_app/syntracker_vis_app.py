@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('agg')
+
 import gc
 
 import matplotlib.pyplot as plt
@@ -255,9 +258,9 @@ class SynTrackerVisApp:
                                                  stylesheets=[bottom_buttons_css])
         self.new_file_button.on_click(self.create_new_session)
 
-        #self.save_setings_button = pn.widgets.Button(name='Save current settings', button_type='primary',
-        #                                         stylesheets=[bottom_buttons_css])
-        #self.save_setings_button.on_click(self.save_settings)
+        self.save_settings_button = pn.widgets.Button(name='Save current settings', button_type='primary',
+                                                stylesheets=[bottom_buttons_css])
+        self.save_settings_button.on_click(self.save_settings)
 
         self.genomes_select = pn.widgets.Select(name='Select a species to process:', value=None,
                                                 options=[], styles={'margin': "0"})
@@ -704,7 +707,7 @@ class SynTrackerVisApp:
         return button_column
 
     def add_bottom_buttomns_row(self):
-        buttons_row = pn.Row(self.save_setings_button, pn.Spacer(width=5), self.new_file_button)
+        buttons_row = pn.Row(self.save_settings_button, pn.Spacer(width=5), self.new_file_button)
         #buttons_col = pn.Column(pn.Spacer(height=20), buttons_row)
         buttons_col = pn.Column(pn.Spacer(height=20), self.new_file_button)
         return buttons_col
