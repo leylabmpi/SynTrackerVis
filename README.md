@@ -16,6 +16,8 @@ It also enables to interactively select the metadata feature by which the sample
 
 Each of the presented plots can be downloaded and saved as a high-resolution image, in several common file formats.
 
+**Please note: SynTrackerVis is replaced by StrainVis (https://github.com/leylabmpi/StrainVis) and is no longer maintained.**
+
 ## Installation
 
 Download SynTrakcerVis's latest release from: https://github.com/leylabmpi/SynTrackerVis/releases.
